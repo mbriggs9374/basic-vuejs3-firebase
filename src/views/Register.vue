@@ -1,19 +1,18 @@
 <template>
-  <form @submit.prevent="login">
-    <h2>Login</h2>
+  <form @submit.prevent="register">
+    <h2>Register</h2>
     <input type="email" placeholder="Email address..." v-model="email" />
     <input type="password" placeholder="password..." v-model="password" />
-    <button type="submit">Login</button>
+    <button type="submit">Register</button>
   </form>
 </template>
 
 <script>
-// @ is an alias to /src
-//import HelloWorld from "@/components/HelloWorld.vue";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default {
-  name: "Home",
+  // @ is an alias to /src
+  name: "Register",
   data() {
     return {
       email: "",
@@ -31,20 +30,24 @@ export default {
     });
   },
   methods: {
-    login() {
+    register() {
       const auth = getAuth();
-      signInWithEmailAndPassword(auth, this.email, this.password)
+      createUserWithEmailAndPassword(auth, this.email, this.password)
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          alert(`Successfully logged in as ${user.email}!`);
-          this.$router.push("/dashboard");
+          const msg = user.isAnonymous
+            ? "Please login."
+            : `Welcome ${user.email}!`;
+          alert(`Successfully registered! ${msg}`);
+          this.$router.push("/");
           // ...
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           alert(`${errorCode}::${errorMessage}`);
+          // ..
         });
     },
   },
